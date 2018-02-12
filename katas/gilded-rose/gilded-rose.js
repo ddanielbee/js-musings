@@ -1,5 +1,5 @@
 class Item {
-  constructor(name, sellIn, quality){
+  constructor(name, sellIn, quality) {
     this.name = name;
     this.sellIn = sellIn;
     this.quality = quality;
@@ -7,7 +7,7 @@ class Item {
 }
 
 class Shop {
-  constructor(items=[]){
+  constructor(items = []) {
     this.items = items;
     this.updateQualityOfItem = this.updateQualityOfItem.bind(this);
     this.calculateNewQuality = this.calculateNewQuality.bind(this);
@@ -17,13 +17,13 @@ class Shop {
     return this.items;
   }
   updateQualityOfItem(item) {
-    if(item.name.indexOf('Sulfuras') >= 0) return item;
+    if (item.name.indexOf("Sulfuras") >= 0) return item;
     return new Item(item.name, item.sellIn - 1, this.calculateNewQuality(item));
   }
   calculateNewQuality(item) {
-    if(item.name.indexOf('Brie') >= 0) return this.handleBrie(item);
-    if(item.name.indexOf('Conjured') >= 0) return this.handleConjured(item);
-    if(item.name.indexOf('Backstage') >= 0) return this.handleBackstage(item);
+    if (item.name.indexOf("Brie") >= 0) return this.handleBrie(item);
+    if (item.name.indexOf("Conjured") >= 0) return this.handleConjured(item);
+    if (item.name.indexOf("Backstage") >= 0) return this.handleBackstage(item);
     const result = item.sellIn >= 0 ? item.quality - 1 : item.quality - 2;
     return result >= 0 ? result : 0;
   }
@@ -35,14 +35,14 @@ class Shop {
     return conjuredResult > 0 ? conjuredResult : 0;
   }
   handleBackstage(item) {
-    if(item.sellIn > 10) return item.quality + 1;
-    if(item.sellIn > 5) return item.quality + 2;
-    if(item.sellIn > 0) return item.quality + 3;
-    if(item.sellIn <= 0) return 0;
+    if (item.sellIn > 10) return item.quality + 1;
+    if (item.sellIn > 5) return item.quality + 2;
+    if (item.sellIn > 0) return item.quality + 3;
+    if (item.sellIn <= 0) return 0;
   }
 }
 
 module.exports = {
-  Item, 
+  Item,
   Shop
-}
+};
