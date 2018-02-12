@@ -39,7 +39,7 @@ const clockIn = (gps, https) =>
     });
 
 describe('The clock-in Module', () => {
-  test('requests the GPS values', () => {
+  it('requests the GPS values', () => {
     expect.assertions(1);
     const expected = 'Success!';
     return expect(getGps(true)).resolves.toBe(expected);
