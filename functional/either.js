@@ -16,7 +16,7 @@ const Left = x => ({
   toString: () => `Left(${x})`
 });
 
-const fromNullable = x => (x !== null && typeof x !== 'undefined' ? Right(x) : Left(x));
+const fromNullable = x => (x !== null && typeof x !== "undefined" ? Right(x) : Left(x));
 
 const Either = x => ({
   map: f => Either.of(x).map(f),
@@ -28,13 +28,13 @@ const Either = x => ({
 Either.of = fromNullable;
 
 const a = {
-  b: 'foo',
-  c: 'bar'
+  b: "foo",
+  c: "bar"
 };
 
-const resultOne = Either.of(a.b).fold(x => 'No such thing', x => x.toUpperCase()); // FOO
+const resultOne = Either.of(a.b).fold(x => "No such thing", x => x.toUpperCase()); // FOO
 
-const resultTwo = Either.of(a.noProp).fold(x => 'No such thing', x => x.toUpperCase()); // No such thing
+const resultTwo = Either.of(a.noProp).fold(x => "No such thing", x => x.toUpperCase()); // No such thing
 
 module.exports = {
   Right,
