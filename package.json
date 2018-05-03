@@ -11,6 +11,8 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "jest": "^21.0.1"
+    "jest": "^21.0.1",
+    "jest-cli": "^22.4.3",
+    "jsverify": "^0.8.3"
   }
 }
