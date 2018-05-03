@@ -27,12 +27,12 @@ const arbitraryMaybe = jsc.bless({
 });
 
 describe("Law abidding Maybe Functor", () => {
-  jsc.property("Identity", arbitraryMaybe, functorIdentity);
-  jsc.property(
-    "Composition",
-    jsc.fn(jsc.integer),
-    jsc.fn(jsc.integer),
-    arbitraryMaybe,
-    functorCompose
-  );
+  it("fulfils identity", () => {
+    expect(jsc.checkForall(arbitraryMaybe, functorIdentity)).toBe(true);
+  });
+  it("fulfils composition", () => {
+    expect(
+      jsc.checkForall(jsc.fn(jsc.integer), jsc.fn(jsc.integer), arbitraryMaybe, functorCompose)
+    ).toBe(true);
+  });
 });

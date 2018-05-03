@@ -27,12 +27,12 @@ const arbitraryEither = jsc.bless({
 });
 
 describe("Law abidding Either Functor", () => {
-  jsc.property("Identity", arbitraryEither, functorIdentity);
-  jsc.property(
-    "Composition",
-    jsc.fn(jsc.integer),
-    jsc.fn(jsc.integer),
-    arbitraryEither,
-    functorCompose
-  );
+  it("fulfils identity", () => {
+    expect(jsc.checkForall(arbitraryEither, functorIdentity)).toBe(true);
+  });
+  it("fulfils composition", () => {
+    expect(
+      jsc.checkForall(jsc.fn(jsc.integer), jsc.fn(jsc.integer), arbitraryEither, functorCompose)
+    ).toBe(true);
+  });
 });
