@@ -26,13 +26,22 @@ const arbitraryEither = jsc.bless({
   }
 });
 
+const options = {
+  quiet: true
+};
+
+const jscHelper = options => forAll => jsc.check(forAll, options);
+const jscQuiet = jscHelper(options);
+
 describe("Law abidding Either Functor", () => {
   it("fulfils identity", () => {
-    expect(jsc.checkForall(arbitraryEither, functorIdentity)).toBe(true);
+    expect(jscQuiet(jsc.forall(arbitraryEither, functorIdentity))).toBe(true);
   });
   it("fulfils composition", () => {
     expect(
-      jsc.checkForall(jsc.fn(jsc.integer), jsc.fn(jsc.integer), arbitraryEither, functorCompose)
+      jscQuiet(
+        jsc.forall(jsc.fn(jsc.integer), jsc.fn(jsc.integer), arbitraryEither, functorCompose)
+      )
     ).toBe(true);
   });
 });
