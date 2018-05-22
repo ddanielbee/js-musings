@@ -1,7 +1,7 @@
 // Instance of
 // Semigroup ✅
-// Monoid
-// Functor
+// Monoid ✅
+// Functor ✅
 // Applicative
 // Traversable
 // Monad
