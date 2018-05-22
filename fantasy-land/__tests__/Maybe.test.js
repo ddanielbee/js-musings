@@ -12,7 +12,7 @@ const { Maybe, Nothing, Just } = require("../Maybe");
 
 const arbitraryMaybeString = jsc.bless({
   generator: () => {
-    switch (jsc.random(0, 1)) {
+    switch (jsc.random(0, 2)) {
       case 0:
         return undefined;
       case 1:
@@ -94,23 +94,23 @@ describe("The Maybe type", () => {
         expect(actual).toEqual(expected);
       });
 
-      it("should return the result of mergint two objects when both are Justs(object)", () => {
+      it("should return the result of merging two objects when both are Justs(object)", () => {
         const expected = Just({ a: 1, b: 2, c: 4 }).toString();
         const actual = Just({ a: 1, b: 1 })
           .concat(Just({ b: 2, c: 4 }))
           .toString();
         expect(actual).toEqual(expected);
       });
-    });
-    it("should fulfil the law of associativity", () => {
-      expect(
-        jsc.checkForall(
-          arbitraryMaybeString,
-          arbitraryMaybeString,
-          arbitraryMaybeString,
-          maybeAssociativity
-        )
-      ).toBe(true);
+      it("should fulfil the law of associativity", () => {
+        expect(
+          jsc.checkForall(
+            arbitraryMaybeString,
+            arbitraryMaybeString,
+            arbitraryMaybeString,
+            maybeAssociativity
+          )
+        ).toBe(true);
+      });
     });
   });
 

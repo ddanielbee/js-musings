@@ -14,6 +14,7 @@ const Nothing = value => ({
   isJust: () => false,
   concat: other => other,
   map: fn => Nothing(),
+  constructor: Maybe,
   toString: () => "Nothing",
   inspect: () => "Nothing",
   instances: ["Semigroup", "Monoid", "Functor"]
@@ -39,6 +40,7 @@ const Just = value => ({
       );
     return Just(fn(value));
   },
+  constructor: Maybe,
   toString: () => `Just(${value})`,
   inspect: () => `Just(${value})`,
   instances: ["Semigroup", "Monoid", "Functor"]
