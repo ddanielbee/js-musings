@@ -2,7 +2,7 @@ const jsc = require("jsverify");
 
 // Write a function that:
 // Takes an array of strings
-// Removes all instances of certain characters (-)
+// Removes all instances of a dash character (-)
 // Makes sure concatenating the strings will result in a string
 // shorter than 200 characters
 // (by removing all extra fluff from the tail)
@@ -29,17 +29,15 @@ const lowerCaseProperty = xs =>
 
 const largeString = jsc.suchthat(jsc.nestring, str => str.length > 5);
 
-const stringArrayArb = jsc.array(largeString);
-
-describe("Our string manipulation function", () => {
+describe.skip("Our string manipulation function", () => {
   it("should remove all instances of dash (-)", () => {
-    expect(jsc.checkForall(stringArrayArb, noDashesProperty)).toBe(true);
+    expect(jsc.checkForall(jsc.array(jsc.nestring), noDashesProperty)).toBe(true);
   });
 
   it("should make sure the resulting concatenation is shorter than 200 chars", () => {
-    expect(jsc.checkForall(stringArrayArb, limitedStringLengthProperty)).toBe(true);
+    expect(jsc.checkForall(jsc.array(largeString), limitedStringLengthProperty)).toBe(true);
   });
   it("should make sure the resulting concatenation is shorter than 200 chars", () => {
-    expect(jsc.checkForall(stringArrayArb, lowerCaseProperty)).toBe(true);
+    expect(jsc.checkForall(jsc.array(jsc.nestring), lowerCaseProperty)).toBe(true);
   });
 });
