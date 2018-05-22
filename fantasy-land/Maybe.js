@@ -1,15 +1,22 @@
-const { fantasyConcat } = require("./utils");
+// Instance of
+// Semigroup ✅
+// Monoid
+// Functor
+// Applicative
+// Traversable
+// Monad
 
-const Maybe = value => (typeof value === "undefined" || value === null ? Nothing() : Just(value));
+const { fantasyConcat } = require("./utils");
 
 const Nothing = value => ({
   value: () => Nothing(),
   isNothing: () => true,
   isJust: () => false,
   concat: other => other,
+  empty: () => Nothing(),
   toString: () => "Nothing",
-  instances: ["Semigroup"],
-  testValue: "Nothing"
+  inspect: () => "Nothing",
+  instances: ["Semigroup"]
 });
 
 const Just = value => ({
@@ -20,10 +27,16 @@ const Just = value => ({
     if (other.isNothing()) return Just(value);
     return Just(fantasyConcat(value, other.value()));
   },
+  empty: () => Nothing(),
   toString: () => `Just(${value})`,
-  instances: ["Semigroup"],
-  testValue: value
+  inspect: () => `Just(${value})`,
+  instances: ["Semigroup"]
 });
+
+const Maybe = {
+  empty: () => Nothing(),
+  of: value => (typeof value === "undefined" || value === null ? Nothing() : Just(value))
+};
 
 module.exports = {
   Maybe,

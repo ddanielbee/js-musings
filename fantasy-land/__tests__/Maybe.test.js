@@ -28,13 +28,13 @@ describe("The Maybe type", () => {
   describe("Has two possible definitions", () => {
     it("should return Nothing if the value passed is undefined || null", () => {
       const expected = Nothing().isNothing();
-      const actual = Maybe(undefined).isNothing();
+      const actual = Maybe.of(undefined).isNothing();
       expect(actual).toBe(expected);
     });
 
     it("should return Just if the value passed is not undefined || null", () => {
       const expected = Just(1).isJust();
-      const actual = Maybe(1).isJust();
+      const actual = Maybe.of(1).isJust();
       expect(actual).toBe(expected);
     });
   });
@@ -43,7 +43,7 @@ describe("The Maybe type", () => {
     describe("Has a concat method which", () => {
       it("should have a type of function", () => {
         const expected = "function";
-        const actual = typeof Maybe().concat;
+        const actual = typeof Maybe.of().concat;
         expect(actual).toEqual(expected);
       });
 
@@ -109,6 +109,22 @@ describe("The Maybe type", () => {
           maybeAssociativity
         )
       ).toBe(true);
+    });
+  });
+
+  describe("Has an instance of Monoid which", () => {
+    describe("Has an empty method which", () => {
+      it("should have a type of function", () => {
+        const expected = "function";
+        const actual = typeof Maybe.of(1).empty;
+        expect(expected).toBe(actual);
+      });
+
+      it("should always return Nothing", () => {
+        const expected = Nothing().toString();
+        const actual = Maybe.empty().toString();
+        expect(expected).toBe(actual);
+      });
     });
   });
 });

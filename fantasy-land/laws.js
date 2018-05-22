@@ -1,10 +1,12 @@
 const associativity = algebra => (a, b, c) =>
-  algebra(a)
-    .concat(algebra(b))
-    .concat(algebra(c))
+  algebra
+    .of(a)
+    .concat(algebra.of(b))
+    .concat(algebra.of(c))
     .toString() ===
-  algebra(a)
-    .concat(algebra(b).concat(algebra(c)))
+  algebra
+    .of(a)
+    .concat(algebra.of(b).concat(algebra.of(c)))
     .toString();
 
 module.exports = {
