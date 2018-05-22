@@ -13,6 +13,12 @@ const fantasyConcat = (semiOne, semiTwo) => {
   throw new Error("Not instances of semigroup, or concatenable primitives!");
 };
 
+const compose = (...fns) => x => fns.reduceRight((acc, cur) => cur(acc), x);
+
+const id = x => x;
+
 module.exports = {
-  fantasyConcat
+  fantasyConcat,
+  compose,
+  id
 };

@@ -1,3 +1,5 @@
+const { compose, id } = require("./utils");
+
 const associativity = algebra => (a, b, c) =>
   algebra
     .of(a)
@@ -21,8 +23,27 @@ const leftIdentity = algebra => m =>
     .concat(algebra.of(m))
     .toString() === algebra.of(m).toString();
 
+const identity = algebra => x =>
+  algebra
+    .of(x)
+    .map(id)
+    .toString() === algebra.of(x).toString();
+
+const composition = algebra => (f, g, x) =>
+  algebra
+    .of(x)
+    .map(compose(f, g))
+    .toString() ===
+  algebra
+    .of(x)
+    .map(g)
+    .map(f)
+    .toString();
+
 module.exports = {
   associativity,
   rightIdentity,
-  leftIdentity
+  leftIdentity,
+  identity,
+  composition
 };

@@ -1,12 +1,13 @@
 // Instance of
 // Semigroup ✅
 // Monoid ✅
-// Functor
+// Functor ✅
 // Applicative
 // Traversable
 // Monad
+
 const jsc = require("jsverify");
-const { associativity, rightIdentity, leftIdentity } = require("../laws");
+const { associativity, rightIdentity, leftIdentity, identity, composition } = require("../laws");
 const { Maybe, Nothing, Just } = require("../Maybe");
 
 const arbitraryMaybeString = jsc.bless({
@@ -27,6 +28,10 @@ const maybeAssociativity = associativity(Maybe);
 const maybeRightIdentity = rightIdentity(Maybe);
 
 const maybeLeftIdentity = leftIdentity(Maybe);
+
+const maybeIdentity = identity(Maybe);
+
+const maybeComposition = composition(Maybe);
 
 describe("The Maybe type", () => {
   describe("Has two possible definitions", () => {
@@ -129,6 +134,71 @@ describe("The Maybe type", () => {
 
       it("should fulfil the left identity property", () => {
         expect(jsc.checkForall(arbitraryMaybeString, maybeLeftIdentity)).toBe(true);
+      });
+    });
+  });
+
+  describe("Has an instance of Functor which", () => {
+    describe("Has a map method which", () => {
+      it("should have a type of function", () => {
+        const expected = "function";
+        const actual = typeof Maybe.of().map;
+        expect(actual).toBe(expected);
+      });
+
+      it("should return Nothing if called on a Nothing", () => {
+        const expected = Nothing().toString();
+        const actual = Nothing()
+          .map(Math.sqrt)
+          .toString();
+        expect(actual).toBe(expected);
+      });
+
+      it("should use Array's map function when called on a Just(Array)", () => {
+        const expected = Just([1, 3, 4]).toString();
+        const actual = Just([1, 9, 16])
+          .map(Math.sqrt)
+          .toString();
+        expect(actual).toBe(expected);
+      });
+
+      it("should compose the two functions if called on a Just(function)", () => {
+        const expected = Math.sqrt("Fantasy".length);
+        const actual = Just(str => str.length)
+          .map(Math.sqrt)
+          .value()("Fantasy");
+        expect(actual).toBe(expected);
+      });
+
+      it("should map the function over every property of a function if called on a Just(object)", () => {
+        const expected = Just({ a: 1, b: 2, c: 3 }).toString();
+        const actual = Just({ a: 1, b: 4, c: 9 })
+          .map(Math.sqrt)
+          .toString();
+        expect(actual).toBe(expected);
+      });
+
+      it("should return the result of applying the function over the value if it's not an object, array or function", () => {
+        const expected = Just(3).toString();
+        const actual = Just(9)
+          .map(Math.sqrt)
+          .toString();
+        expect(actual).toBe(expected);
+      });
+
+      it("should fulfil the identity property", () => {
+        expect(jsc.checkForall(arbitraryMaybeString, maybeIdentity)).toBe(true);
+      });
+
+      it("should fulfil the composition property", () => {
+        expect(
+          jsc.checkForall(
+            jsc.fn(jsc.string),
+            jsc.fn(jsc.string),
+            arbitraryMaybeString,
+            maybeComposition
+          )
+        ).toBe(true);
       });
     });
   });
