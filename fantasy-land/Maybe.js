@@ -13,7 +13,6 @@ const Nothing = value => ({
   isNothing: () => true,
   isJust: () => false,
   concat: other => other,
-  empty: () => Nothing(),
   toString: () => "Nothing",
   inspect: () => "Nothing",
   instances: ["Semigroup"]
@@ -27,7 +26,6 @@ const Just = value => ({
     if (other.isNothing()) return Just(value);
     return Just(fantasyConcat(value, other.value()));
   },
-  empty: () => Nothing(),
   toString: () => `Just(${value})`,
   inspect: () => `Just(${value})`,
   instances: ["Semigroup"]

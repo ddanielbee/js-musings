@@ -1,12 +1,12 @@
 // Instance of
 // Semigroup ✅
-// Monoid
+// Monoid ✅
 // Functor
 // Applicative
 // Traversable
 // Monad
 const jsc = require("jsverify");
-const { associativity } = require("../laws");
+const { associativity, rightIdentity, leftIdentity } = require("../laws");
 const { Maybe, Nothing, Just } = require("../Maybe");
 
 const arbitraryMaybeString = jsc.bless({
@@ -23,6 +23,10 @@ const arbitraryMaybeString = jsc.bless({
 });
 
 const maybeAssociativity = associativity(Maybe);
+
+const maybeRightIdentity = rightIdentity(Maybe);
+
+const maybeLeftIdentity = leftIdentity(Maybe);
 
 describe("The Maybe type", () => {
   describe("Has two possible definitions", () => {
@@ -85,13 +89,6 @@ describe("The Maybe type", () => {
         expect(actual).toEqual(expected);
       });
 
-      it("should return the result of summing its value with the parameter's value when both are Justs Number", () => {
-        const expected = Just(3).toString();
-        const actual = Just(1)
-          .concat(Just(2))
-          .toString();
-        expect(actual).toEqual(expected);
-      });
       it("should return the result of mergint two objects when both are Justs(object)", () => {
         const expected = Just({ a: 1, b: 2, c: 4 }).toString();
         const actual = Just({ a: 1, b: 1 })
@@ -116,7 +113,7 @@ describe("The Maybe type", () => {
     describe("Has an empty method which", () => {
       it("should have a type of function", () => {
         const expected = "function";
-        const actual = typeof Maybe.of(1).empty;
+        const actual = typeof Maybe.empty;
         expect(expected).toBe(actual);
       });
 
@@ -124,6 +121,14 @@ describe("The Maybe type", () => {
         const expected = Nothing().toString();
         const actual = Maybe.empty().toString();
         expect(expected).toBe(actual);
+      });
+
+      it("should fulfil the right identity property", () => {
+        expect(jsc.checkForall(arbitraryMaybeString, maybeRightIdentity)).toBe(true);
+      });
+
+      it("should fulfil the left identity property", () => {
+        expect(jsc.checkForall(arbitraryMaybeString, maybeLeftIdentity)).toBe(true);
       });
     });
   });
