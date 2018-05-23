@@ -1,55 +1,52 @@
 const { compose, id } = require("./utils");
 
-const associativity = algebra => (a, b, c) =>
-  algebra
-    .of(a)
-    .concat(algebra.of(b))
-    .concat(algebra.of(c))
-    .toString() ===
-  algebra
-    .of(a)
-    .concat(algebra.of(b).concat(algebra.of(c)))
-    .toString();
+const associativity = (a, b, c) =>
+  a
+    .concat(b)
+    .concat(c)
+    .toString() === a.concat(b.concat(c)).toString();
 
-const rightIdentity = algebra => m =>
-  algebra
-    .of(m)
-    .concat(algebra.empty())
-    .toString() === algebra.of(m).toString();
+const rightIdentity = algebra => m => m.concat(algebra.empty()).toString() === m.toString();
 
 const leftIdentity = algebra => m =>
   algebra
     .empty()
-    .concat(algebra.of(m))
-    .toString() === algebra.of(m).toString();
+    .concat(m)
+    .toString() === m.toString();
 
-const identity = algebra => x =>
-  algebra
-    .of(x)
-    .map(id)
-    .toString() === algebra.of(x).toString();
+const identity = x => x.map(id).toString() === x.toString();
 
-const composition = algebra => (f, g, x) =>
-  algebra
-    .of(x)
-    .map(compose(f, g))
-    .toString() ===
-  algebra
-    .of(x)
+const composition = (f, g, x) =>
+  x.map(compose(f, g)).toString() ===
+  x
     .map(g)
     .map(f)
     .toString();
 
-const applyComposition = algebra => (f, g, x) =>
+const applyComposition = (a, u, v) =>
+  v.ap(u.ap(a.map(f => g => x => f(g(x))))).toString() ===
+  v
+    .ap(u)
+    .ap(a)
+    .toString();
+
+const applicativeIdentity = algebra => x =>
+  algebra
+    .of(x)
+    .ap(algebra.of(id))
+    .toString() === algebra.of(x).toString();
+
+const applicativeHomomorphism = algebra => (f, x) =>
   algebra
     .of(x)
     .ap(algebra.of(f))
-    .ap(algebra.of(g))
-    .toString() ===
+    .toString() === algebra.of(f(x)).toString();
+
+const applicativeInterchange = algebra => (u, y) =>
   algebra
-    .of(x)
-    .ap(algebra.of(compose(g, f)))
-    .toString();
+    .of(y)
+    .ap(u)
+    .toString() === u.ap(algebra.of(f => f(y))).toString();
 
 module.exports = {
   associativity,
@@ -57,5 +54,8 @@ module.exports = {
   leftIdentity,
   identity,
   composition,
-  applyComposition
+  applyComposition,
+  applicativeIdentity,
+  applicativeHomomorphism,
+  applicativeInterchange
 };

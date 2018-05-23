@@ -15,10 +15,21 @@ const fantasyConcat = (semiOne, semiTwo) => {
 
 const compose = (...fns) => x => fns.reduceRight((acc, cur) => cur(acc), x);
 
+const fantasyMap = (fn, value) => {
+  if (Array.isArray(value)) return value.map(fn);
+  if (typeof value === "object")
+    return Object.keys(value).reduce((acc, cur) => {
+      acc[cur] = fn(value[cur]);
+      return acc;
+    }, {});
+  return fn(value);
+};
+
 const id = x => x;
 
 module.exports = {
   fantasyConcat,
+  fantasyMap,
   compose,
   id
 };
