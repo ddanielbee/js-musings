@@ -40,10 +40,22 @@ const composition = algebra => (f, g, x) =>
     .map(f)
     .toString();
 
+const applyComposition = algebra => (f, g, x) =>
+  algebra
+    .of(x)
+    .ap(algebra.of(f))
+    .ap(algebra.of(g))
+    .toString() ===
+  algebra
+    .of(x)
+    .ap(algebra.of(f).ap(algebra.of(g)))
+    .toString();
+
 module.exports = {
   associativity,
   rightIdentity,
   leftIdentity,
   identity,
-  composition
+  composition,
+  applyComposition
 };

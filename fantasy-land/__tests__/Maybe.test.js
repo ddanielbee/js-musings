@@ -2,12 +2,20 @@
 // Semigroup ✅
 // Monoid ✅
 // Functor ✅
+// Apply
 // Applicative
 // Traversable
 // Monad
 
 const jsc = require("jsverify");
-const { associativity, rightIdentity, leftIdentity, identity, composition } = require("../laws");
+const {
+  associativity,
+  rightIdentity,
+  leftIdentity,
+  identity,
+  composition,
+  applyComposition
+} = require("../laws");
 const { Maybe, Nothing, Just } = require("../Maybe");
 
 const arbitraryMaybeString = jsc.bless({
@@ -32,6 +40,8 @@ const maybeLeftIdentity = leftIdentity(Maybe);
 const maybeIdentity = identity(Maybe);
 
 const maybeComposition = composition(Maybe);
+
+const maybeApplyComposition = applyComposition(Maybe);
 
 describe("The Maybe type", () => {
   describe("Has two possible definitions", () => {
@@ -197,6 +207,58 @@ describe("The Maybe type", () => {
             jsc.fn(jsc.string),
             arbitraryMaybeString,
             maybeComposition
+          )
+        ).toBe(true);
+      });
+    });
+  });
+
+  describe("Has an instance of Apply which", () => {
+    describe("Has an ap function which", () => {
+      it("should have a type of function", () => {
+        const expected = "function";
+        const actual = typeof Maybe.of().ap;
+        expect(actual).toBe(expected);
+      });
+
+      it("should throw when the passed argument is not of the same type", () => {
+        expect(() => {
+          Maybe.of(1).ap({ foo: "bar" });
+        }).toThrow();
+      });
+      it("should always return Nothing when called on a Nothing", () => {
+        const actual = Nothing().toString();
+        const expected = Maybe.of()
+          .ap(Maybe.of(x => x))
+          .toString();
+        expect(actual).toBe(expected);
+      });
+      it("should always return Nothing when called on a Just with a Nothing as argument", () => {
+        const actual = Nothing().toString();
+        const expected = Maybe.of(9)
+          .ap(Maybe.of())
+          .toString();
+        expect(actual).toBe(expected);
+      });
+      it("should Throw if value inside of the argument Just is not a function", () => {
+        expect(() => {
+          Maybe.of(1).ap(Maybe.of(1));
+        }).toThrow();
+      });
+      it("should apply the function inside of the argument to the value of the Just being called on, and return a Just of the result", () => {
+        const expected = Just(3).toString();
+        const actual = Just(9)
+          .ap(Just(Math.sqrt))
+          .toString();
+        expect(actual).toBe(expected);
+      });
+      it("should fulfil the composition property", () => {
+        expect(
+          jsc.checkForall(
+            jsc.fn(jsc.string),
+            jsc.fn(jsc.string),
+            arbitraryMaybeString,
+            maybeApplyComposition
           )
         ).toBe(true);
       });
