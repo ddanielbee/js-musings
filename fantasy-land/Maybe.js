@@ -54,7 +54,6 @@ const Just = value => ({
     if (semi.isNothing()) return Nothing();
     if (typeof semi.value() !== "function")
       throw new Error("Value inside of Argument is not a function!");
-    if (typeof value === "function") return Just(compose(semi.value(), value));
     return Just(semi.value()(value));
   },
   constructor: Maybe,

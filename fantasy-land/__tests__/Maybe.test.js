@@ -2,7 +2,7 @@
 // Semigroup ✅
 // Monoid ✅
 // Functor ✅
-// Apply
+// Apply ✅
 // Applicative
 // Traversable
 // Monad

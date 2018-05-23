@@ -48,7 +48,7 @@ const applyComposition = algebra => (f, g, x) =>
     .toString() ===
   algebra
     .of(x)
-    .ap(algebra.of(f).ap(algebra.of(g)))
+    .ap(algebra.of(compose(g, f)))
     .toString();
 
 module.exports = {
