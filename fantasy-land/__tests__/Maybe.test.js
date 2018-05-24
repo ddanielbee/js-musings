@@ -36,6 +36,32 @@ const maybeApplicativeHomomorphism = applicativeHomomorphism(Maybe);
 const maybeApplicativeInterchange = applicativeInterchange(Maybe);
 
 describe("The Maybe type", () => {
+  describe("Has an instance of Setoid which", () => {
+    describe("Has an equals method which", () => {
+      it("should have a type of function", () => {
+        const expected = "function";
+        const actual = typeof Just().equals;
+        expect(actual).toBe(expected);
+      });
+      it("should return true for 2 Nothing", () => {
+        const actual = Nothing().equals(Nothing());
+        expect(actual).toBe(true);
+      });
+      it("should return false for 1 Nothing and 1 Just", () => {
+        const actual = Nothing().equals(Just(1));
+        expect(actual).toBe(false);
+      });
+      it("should return false for 1 Just and 1 Nothing", () => {
+        const actual = Just(1).equals(Nothing());
+        expect(actual).toBe(false);
+      });
+      it("should return true for 2 Just with the same value inside", () => {
+        const actual = Just(1).equals(Just(1));
+        expect(actual).toBe(true);
+      });
+    });
+  });
+
   describe("Has an instance of Semigroup which", () => {
     describe("Has a concat method which", () => {
       it("should have a type of function", () => {
@@ -45,19 +71,17 @@ describe("The Maybe type", () => {
       });
 
       it("should return its argument if called on a Nothing", () => {
-        const expected = "Just(1)";
         const actual = Nothing()
           .concat(Just(1))
-          .toString();
-        expect(actual).toBe(expected);
+          .equals(Just(1));
+        expect(actual).toBe(true);
       });
 
       it("should return itself if called on a Just with a Nothing as parameter", () => {
-        const expected = "Just(1)";
         const actual = Just(1)
           .concat(Nothing())
-          .toString();
-        expect(actual).toBe(expected);
+          .equals(Just(1));
+        expect(actual).toBe(true);
       });
 
       it("should throw if the two types inside the Just are different / don't have a Semigroup instance", () => {
@@ -75,19 +99,17 @@ describe("The Maybe type", () => {
       });
 
       it("should return the result of concatenating its value with the parameter's value when both are Justs String", () => {
-        const expected = Just("Hello World").toString();
         const actual = Just("Hello ")
           .concat(Just("World"))
-          .toString();
-        expect(actual).toEqual(expected);
+          .equals(Just("Hello World"));
+        expect(actual).toBe(true);
       });
 
       it("should return the result of merging two objects when both are Justs(object)", () => {
-        const expected = Just({ a: 1, b: 2, c: 4 }).toString();
         const actual = Just({ a: 1, b: 1 })
           .concat(Just({ b: 2, c: 4 }))
-          .toString();
-        expect(actual).toEqual(expected);
+          .equals(Just({ a: 1, b: 2, c: 4 }));
+        expect(actual).toBe(true);
       });
       it("should fulfil the law of associativity", () => {
         expect(jsc.checkForall(maybeArb, maybeArb, maybeArb, associativity)).toBe(true);
@@ -104,9 +126,8 @@ describe("The Maybe type", () => {
       });
 
       it("should always return Nothing", () => {
-        const expected = Nothing().toString();
-        const actual = Maybe.empty().toString();
-        expect(expected).toBe(actual);
+        const actual = Maybe.empty().equals(Nothing());
+        expect(actual).toBe(true);
       });
 
       it("should fulfil the right identity property", () => {
@@ -128,39 +149,44 @@ describe("The Maybe type", () => {
       });
 
       it("should return Nothing if called on a Nothing", () => {
-        const expected = Nothing().toString();
         const actual = Nothing()
           .map(Math.sqrt)
-          .toString();
-        expect(actual).toBe(expected);
+          .equals(Nothing());
+        expect(actual).toBe(true);
       });
 
       it("should use Array's map function when called on a Just(Array)", () => {
-        const expected = Just([1, 3, 4]).toString();
+        const expected = Just([1, 3, 4]).value();
         const actual = Just([1, 9, 16])
           .map(Math.sqrt)
-          .toString();
-        expect(actual).toBe(expected);
+          .value();
+        expect(actual).toEqual(expected);
       });
 
       it("should map the function over every property of a function if called on a Just(object)", () => {
-        const expected = Just({ a: 1, b: 2, c: 3 }).toString();
+        const expected = Just({ a: 1, b: 2, c: 3 }).value();
         const actual = Just({ a: 1, b: 4, c: 9 })
           .map(Math.sqrt)
-          .toString();
-        expect(actual).toBe(expected);
+          .value();
+        expect(actual).toEqual(expected);
       });
 
-      it("should return the result of applying the function over the value if it's not an object, array or function", () => {
-        const expected = Just(3).toString();
+      it("should return the result of applying the function over the value if it's not an object or array", () => {
+        const expected = Just(3).value();
         const actual = Just(9)
           .map(Math.sqrt)
-          .toString();
+          .value();
         expect(actual).toBe(expected);
       });
 
       it("should fulfil the identity property", () => {
         expect(jsc.checkForall(maybeArb, identity)).toBe(true);
+      });
+
+      it("should fulfil the composition property", () => {
+        expect(jsc.checkForall(jsc.fn(jsc.string), jsc.fn(jsc.string), maybeArb, composition)).toBe(
+          true
+        );
       });
     });
   });
@@ -179,18 +205,16 @@ describe("The Maybe type", () => {
         }).toThrow();
       });
       it("should always return Nothing when called on a Nothing", () => {
-        const actual = Nothing().toString();
-        const expected = Nothing()
+        const actual = Nothing()
           .ap(Just(x => x))
-          .toString();
-        expect(actual).toBe(expected);
+          .equals(Nothing());
+        expect(actual).toBe(true);
       });
       it("should always return Nothing when called on a Just with a Nothing as argument", () => {
-        const actual = Nothing().toString();
-        const expected = Just(9)
+        const actual = Just(9)
           .ap(Nothing())
-          .toString();
-        expect(actual).toBe(expected);
+          .equals(Nothing());
+        expect(actual).toBe(true);
       });
       it("should Throw if value inside of the argument Just is not a function", () => {
         expect(() => {
@@ -198,10 +222,10 @@ describe("The Maybe type", () => {
         }).toThrow();
       });
       it("should apply the function inside of the argument to the value of the Just being called on, and return a Just of the result", () => {
-        const expected = Just(3).toString();
+        const expected = Just(3).value();
         const actual = Just(9)
           .ap(Just(Math.sqrt))
-          .toString();
+          .value();
         expect(actual).toBe(expected);
       });
       it("should fulfil the composition property", () => {

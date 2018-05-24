@@ -4,49 +4,40 @@ const associativity = (a, b, c) =>
   a
     .concat(b)
     .concat(c)
-    .toString() === a.concat(b.concat(c)).toString();
+    .equals(a.concat(b.concat(c)));
 
-const rightIdentity = algebra => m => m.concat(algebra.empty()).toString() === m.toString();
+const rightIdentity = algebra => m => m.concat(algebra.empty()).equals(m);
 
 const leftIdentity = algebra => m =>
   algebra
     .empty()
     .concat(m)
-    .toString() === m.toString();
+    .equals(m);
 
-const identity = x => x.map(id).toString() === x.toString();
+const identity = x => x.map(id).equals(x);
 
-const composition = (f, g, x) =>
-  x.map(compose(f, g)).toString() ===
-  x
-    .map(g)
-    .map(f)
-    .toString();
+const composition = (f, g, x) => x.map(compose(f, g)).equals(x.map(g).map(f));
 
 const applyComposition = (a, u, v) =>
-  v.ap(u.ap(a.map(f => g => x => f(g(x))))).toString() ===
-  v
-    .ap(u)
-    .ap(a)
-    .toString();
+  v.ap(u.ap(a.map(f => g => x => f(g(x))))).equals(v.ap(u).ap(a));
 
 const applicativeIdentity = algebra => x =>
   algebra
     .of(x)
     .ap(algebra.of(id))
-    .toString() === algebra.of(x).toString();
+    .equals(algebra.of(x));
 
 const applicativeHomomorphism = algebra => (f, x) =>
   algebra
     .of(x)
     .ap(algebra.of(f))
-    .toString() === algebra.of(f(x)).toString();
+    .equals(algebra.of(f(x)));
 
 const applicativeInterchange = algebra => (u, y) =>
   algebra
     .of(y)
     .ap(u)
-    .toString() === u.ap(algebra.of(f => f(y))).toString();
+    .equals(u.ap(algebra.of(f => f(y))));
 
 module.exports = {
   associativity,

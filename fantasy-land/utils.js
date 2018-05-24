@@ -27,9 +27,44 @@ const fantasyMap = (fn, value) => {
 
 const id = x => x;
 
+const equalArrays = (xs, ys) => {
+  if (xs.length !== ys.length) return false;
+  return xs
+    .sort((a, b) => a < b)
+    .map((x, i) => fantasyEquals(x, ys.sort((a, b) => a < b)[i]))
+    .every(bool => bool);
+};
+
+const equalObjects = (x, y) => {
+  if (Object.keys(x).length !== Object.keys(y).length) return false;
+  return Object.keys(x)
+    .map(key => y.hasOwnProperty(key) && fantasyEquals(x[key], y[key]))
+    .every(bool => bool === true);
+};
+
+const sameType = (x, y) =>
+  typeof x === typeof y &&
+  typeof x.constructor !== "undefined" &&
+  typeof y.constructor !== "undefined" &&
+  x.constructor.typeRepresentation === y.constructor.typeRepresentation;
+
+const fantasyEquals = (x, y) => {
+  if (!sameType(x, y)) return false;
+  if (
+    typeof x.constructor.typeRepresentation !== "undefined" &&
+    typeof y.constructor.typeRepresentation !== "undefined" &&
+    x.constructor.typeRepresentation === y.constructor.typeRepresentation
+  )
+    return fantasyEquals(x.value(), y.value());
+  if (Array.isArray(x)) return equalArrays(x, y);
+  if (typeof x === "object") return equalObjects(x, y);
+  return x === y;
+};
+
 module.exports = {
   fantasyConcat,
   fantasyMap,
   compose,
-  id
+  id,
+  fantasyEquals
 };
