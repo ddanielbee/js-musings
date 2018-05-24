@@ -17,7 +17,11 @@ const compose = (...fns) => x => fns.reduceRight((acc, cur) => cur(acc), x);
 
 const fantasyMap = (fn, value) => {
   if (Array.isArray(value)) return value.map(fn);
-  if (typeof value === "object")
+  if (
+    typeof value.constructor !== "undefined" &&
+    typeof value.constructor.typeRepresentation === "undefined" &&
+    typeof value === "object"
+  )
     return Object.keys(value).reduce((acc, cur) => {
       acc[cur] = fn(value[cur]);
       return acc;
@@ -56,6 +60,7 @@ const fantasyEquals = (x, y) => {
     x.constructor.typeRepresentation === y.constructor.typeRepresentation
   )
     return fantasyEquals(x.value(), y.value());
+
   if (Array.isArray(x)) return equalArrays(x, y);
   if (typeof x === "object") return equalObjects(x, y);
   return x === y;

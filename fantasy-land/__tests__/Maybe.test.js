@@ -11,7 +11,11 @@ const {
   applicativeIdentity,
   applicativeHomomorphism,
   applicativeInterchange,
-  foldableReduce
+  foldableReduce,
+  traversableIdentity,
+  chainAssociativity,
+  monadLeftIdentity,
+  monadRightIdentity
 } = require("../laws");
 
 const { Maybe, Nothing, Just } = require("../Maybe");
@@ -29,6 +33,12 @@ const maybeApplicativeIdentity = applicativeIdentity(Maybe);
 const maybeApplicativeHomomorphism = applicativeHomomorphism(Maybe);
 
 const maybeApplicativeInterchange = applicativeInterchange(Maybe);
+
+const maybeTraversableIdentity = traversableIdentity(Maybe);
+
+const maybeMonadLeft = monadLeftIdentity(Maybe);
+
+const maybeMonadRight = monadRightIdentity(Maybe);
 
 describe("The Maybe type", () => {
   describe("Has an instance of Setoid which", () => {
@@ -287,6 +297,88 @@ describe("The Maybe type", () => {
           true
         );
       });
+    });
+  });
+
+  describe("Has an instance of Traversable which", () => {
+    describe("Has a traverse method which", () => {
+      it("should have a type of function", () => {
+        const actualNothing = typeof Nothing().traverse;
+        const actualJust = typeof Just().traverse;
+        expect(actualNothing).toBe("function");
+        expect(actualJust).toBe("function");
+      });
+
+      it("should take 2 arguments", () => {
+        const actualNothing = Nothing().traverse.length;
+        const actualJust = Just().traverse.length;
+        expect(actualNothing).toBe(2);
+        expect(actualJust).toBe(2);
+      });
+
+      it("should return the result of applying the type representative's .of function to Nothing if called on a Nothing", () => {
+        const expected = Just(Nothing());
+        const actual = Nothing().traverse(Maybe, x => Just(x));
+        expect(actual.equals(expected)).toBe(true);
+      });
+
+      it("should return the result of mapping Just over the result of applying the function to the value inside the Just", () => {
+        const expected = Just(Just(3));
+        const actual = Just(9).traverse(Maybe, x => Just(Math.sqrt(x)));
+        expect(actual.equals(expected)).toBe(true);
+      });
+
+      it("should fulfil the identity property", () => {
+        expect(jsc.checkForall(maybeArb, maybeTraversableIdentity)).toBe(true);
+      });
+
+      // TODO: find a way to test naturality and composition in Traversable
+    });
+  });
+
+  describe("Has an instance of Chain which", () => {
+    describe("Has a chain method which", () => {
+      it("should have a type of function", () => {
+        const actualNothing = typeof Nothing().chain;
+        const actualJust = typeof Just().chain;
+        expect(actualNothing).toBe("function");
+        expect(actualJust).toBe("function");
+      });
+
+      it("should take 1 arguments", () => {
+        const actualNothing = Nothing().chain.length;
+        const actualJust = Just().chain.length;
+        expect(actualNothing).toBe(1);
+        expect(actualJust).toBe(1);
+      });
+
+      it("should return Nothing if called on a Nothing", () => {
+        const expected = Nothing();
+        const actual = Nothing().chain(x => Just(x));
+        expect(actual.equals(expected)).toBe(true);
+      });
+
+      it("should return the result of applying the function to the value inside the Just", () => {
+        const expected = Just(20);
+        const actual = Just(10).chain(x => Just(x * 2));
+        expect(actual.equals(expected)).toBe(true);
+      });
+
+      it("should fulfil the associativity property", () => {
+        expect(
+          jsc.checkForall(jsc.fn(maybeArb), jsc.fn(maybeArb), maybeArb, chainAssociativity)
+        ).toBe(true);
+      });
+    });
+  });
+
+  describe("Has an instance of Monad which", () => {
+    it("should fulfil the left identity property", () => {
+      expect(jsc.checkForall(jsc.fn(maybeArb), jsc.string, maybeMonadLeft)).toBe(true);
+    });
+
+    it("should fulfil the right identity property", () => {
+      expect(jsc.checkForall(jsc.fn(maybeArb), maybeArb, maybeMonadRight)).toBe(true);
     });
   });
 });

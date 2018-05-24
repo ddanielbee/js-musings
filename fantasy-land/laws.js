@@ -1,4 +1,5 @@
 const { compose, id } = require("./utils");
+const { Maybe } = require("./Maybe");
 
 const reflexivity = a => a.equals(a) === true;
 
@@ -46,6 +47,22 @@ const applicativeInterchange = algebra => (u, y) =>
 const foldableReduce = (fn, initial, a) =>
   a.reduce(fn, initial) === a.reduce((acc, x) => acc.concat([x]), []).reduce(fn, initial);
 
+const traversableIdentity = algebra => u => u.traverse(algebra, algebra.of).equals(algebra.of(u));
+
+const chainAssociativity = (f, g, m) =>
+  m
+    .chain(f)
+    .chain(g)
+    .equals(m.chain(x => f(x).chain(g)));
+
+const monadLeftIdentity = algebra => (f, a) =>
+  algebra
+    .of(a)
+    .chain(f)
+    .equals(f(a));
+
+const monadRightIdentity = algebra => (f, m) => m.chain(algebra.of).equals(m);
+
 module.exports = {
   reflexivity,
   symmetry,
@@ -58,5 +75,9 @@ module.exports = {
   applicativeIdentity,
   applicativeHomomorphism,
   applicativeInterchange,
-  foldableReduce
+  foldableReduce,
+  traversableIdentity,
+  chainAssociativity,
+  monadLeftIdentity,
+  monadRightIdentity
 };

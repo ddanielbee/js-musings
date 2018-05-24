@@ -6,13 +6,15 @@
 // Apply ✅
 // Applicative ✅
 // Foldable ✅
-// Traversable
-// Monad
+// Traversable ✅?¿?
+// Chain ✅
+// Monad ✅
+// Success!
 
 const { fantasyConcat, compose, fantasyMap, fantasyEquals } = require("./utils");
 
 const Nothing = value => ({
-  value: () => Nothing(),
+  value: () => "Nothing",
   isNothing: () => true,
   isJust: () => false,
   equals: other => other.isNothing(),
@@ -20,6 +22,8 @@ const Nothing = value => ({
   map: fn => Nothing(),
   ap: other => Nothing(),
   reduce: (fn, initial) => initial,
+  traverse: (typeRepresentative, fn) => typeRepresentative.of(Nothing()),
+  chain: fn => Nothing(),
   constructor: Maybe,
   toString: () => "Nothing",
   inspect: () => "Nothing",
@@ -35,6 +39,8 @@ const Just = value => ({
   map: fn => Just(fantasyMap(fn, value)),
   ap: other => (other.isJust() ? Just(fantasyMap(other.value(), value)) : other),
   reduce: (fn, initial) => fn(initial, value),
+  traverse: (typeRepresentative, fn) => fantasyMap(Just, fn(value)),
+  chain: fn => fantasyMap(fn, value),
   constructor: Maybe,
   toString: () => `Just(${value})`,
   inspect: () => `Just(${value})`,
