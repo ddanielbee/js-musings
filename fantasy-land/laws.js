@@ -1,5 +1,9 @@
 const { compose, id } = require("./utils");
 
+const reflexivity = a => a.equals(a) === true;
+
+const symmetry = (a, b) => a.equals(b) === b.equals(a);
+
 const associativity = (a, b, c) =>
   a
     .concat(b)
@@ -39,7 +43,12 @@ const applicativeInterchange = algebra => (u, y) =>
     .ap(u)
     .equals(u.ap(algebra.of(f => f(y))));
 
+const foldableReduce = (fn, initial, a) =>
+  a.reduce(fn, initial) === a.reduce((acc, x) => acc.concat([x]), []).reduce(fn, initial);
+
 module.exports = {
+  reflexivity,
+  symmetry,
   associativity,
   rightIdentity,
   leftIdentity,
@@ -48,5 +57,6 @@ module.exports = {
   applyComposition,
   applicativeIdentity,
   applicativeHomomorphism,
-  applicativeInterchange
+  applicativeInterchange,
+  foldableReduce
 };

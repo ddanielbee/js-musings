@@ -3,8 +3,9 @@
 // Semigroup ✅
 // Monoid ✅
 // Functor ✅
-// Apply
-// Applicative
+// Apply ✅
+// Applicative ✅
+// Foldable ✅
 // Traversable
 // Monad
 
@@ -18,6 +19,7 @@ const Nothing = value => ({
   concat: other => other,
   map: fn => Nothing(),
   ap: other => Nothing(),
+  reduce: (fn, initial) => initial,
   constructor: Maybe,
   toString: () => "Nothing",
   inspect: () => "Nothing",
@@ -32,6 +34,7 @@ const Just = value => ({
   concat: other => (other.isNothing() ? Just(value) : Just(fantasyConcat(value, other.value()))),
   map: fn => Just(fantasyMap(fn, value)),
   ap: other => (other.isJust() ? Just(fantasyMap(other.value(), value)) : other),
+  reduce: (fn, initial) => fn(initial, value),
   constructor: Maybe,
   toString: () => `Just(${value})`,
   inspect: () => `Just(${value})`,

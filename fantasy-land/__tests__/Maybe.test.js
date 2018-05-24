@@ -1,14 +1,7 @@
-// Instance of
-// Semigroup ✅
-// Monoid ✅
-// Functor ✅
-// Apply ✅
-// Applicative ✅
-// Traversable
-// Monad
-
 const jsc = require("jsverify");
 const {
+  reflexivity,
+  symmetry,
   associativity,
   rightIdentity,
   leftIdentity,
@@ -17,8 +10,10 @@ const {
   applyComposition,
   applicativeIdentity,
   applicativeHomomorphism,
-  applicativeInterchange
+  applicativeInterchange,
+  foldableReduce
 } = require("../laws");
+
 const { Maybe, Nothing, Just } = require("../Maybe");
 
 const maybeArb = jsc.string.smap(Just, x => x.value(), y => y.toString());
@@ -58,6 +53,12 @@ describe("The Maybe type", () => {
       it("should return true for 2 Just with the same value inside", () => {
         const actual = Just(1).equals(Just(1));
         expect(actual).toBe(true);
+      });
+      it("should fulfil the law of reflexivity", () => {
+        expect(jsc.checkForall(maybeArb, reflexivity)).toBe(true);
+      });
+      it("should fulfil the law of symmetry", () => {
+        expect(jsc.checkForall(maybeArb, maybeArb, symmetry)).toBe(true);
       });
     });
   });
@@ -248,6 +249,43 @@ describe("The Maybe type", () => {
 
       it("should fulfil the interchange property", () => {
         expect(jsc.checkForall(maybeFnArb, jsc.string, maybeApplicativeInterchange)).toBe(true);
+      });
+    });
+  });
+
+  describe("Has an instance of Foldable which", () => {
+    describe("Has a reduce method which", () => {
+      it("should have a type of function", () => {
+        const expected = "function";
+        const actualJust = typeof Just(1).reduce;
+        const actualNothing = typeof Nothing().reduce;
+        expect(actualJust).toBe(expected);
+        expect(actualNothing).toBe(expected);
+      });
+      it("should take a function and an initial value as arguments (arity of 2)", () => {
+        const expected = 2;
+        const actualNothing = Nothing().reduce.length;
+        const actualJust = Just().reduce.length;
+        expect(actualNothing).toBe(expected);
+        expect(actualJust).toBe(expected);
+      });
+
+      it("should return the initial value provided when called on a Nothing", () => {
+        const expected = 10;
+        const actual = Nothing().reduce((acc, x) => acc + x, 10);
+        expect(actual).toBe(expected);
+      });
+
+      it("should return the result of calling the function with initial value and value inside of Just", () => {
+        const expected = 100;
+        const actual = Just(2).reduce(Math.pow, 10);
+        expect(actual).toBe(expected);
+      });
+
+      it("should fulfil the foldableReduce property", () => {
+        expect(jsc.checkForall(jsc.fn(jsc.string), jsc.string, maybeArb, foldableReduce)).toBe(
+          true
+        );
       });
     });
   });
