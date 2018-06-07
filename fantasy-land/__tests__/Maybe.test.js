@@ -166,22 +166,6 @@ describe("The Maybe type", () => {
         expect(actual).toBe(true);
       });
 
-      it("should use Array's map function when called on a Just(Array)", () => {
-        const expected = Just([1, 3, 4]).value();
-        const actual = Just([1, 9, 16])
-          .map(Math.sqrt)
-          .value();
-        expect(actual).toEqual(expected);
-      });
-
-      it("should map the function over every property of a function if called on a Just(object)", () => {
-        const expected = Just({ a: 1, b: 2, c: 3 }).value();
-        const actual = Just({ a: 1, b: 4, c: 9 })
-          .map(Math.sqrt)
-          .value();
-        expect(actual).toEqual(expected);
-      });
-
       it("should return the result of applying the function over the value if it's not an object or array", () => {
         const expected = Just(3).value();
         const actual = Just(9)

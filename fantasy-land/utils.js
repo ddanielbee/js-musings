@@ -16,16 +16,8 @@ const fantasyConcat = (semiOne, semiTwo) => {
 const compose = (...fns) => x => fns.reduceRight((acc, cur) => cur(acc), x);
 
 const fantasyMap = (fn, value) => {
-  if (Array.isArray(value)) return value.map(fn);
-  if (
-    typeof value.constructor !== "undefined" &&
-    typeof value.constructor.typeRepresentation === "undefined" &&
-    typeof value === "object"
-  )
-    return Object.keys(value).reduce((acc, cur) => {
-      acc[cur] = fn(value[cur]);
-      return acc;
-    }, {});
+  if (typeof value.instances !== "undefined" && value.instances.includes("Functor"))
+    return value.map(fn);
   return fn(value);
 };
 

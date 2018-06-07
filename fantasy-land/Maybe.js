@@ -27,7 +27,17 @@ const Nothing = value => ({
   constructor: Maybe,
   toString: () => "Nothing",
   inspect: () => "Nothing",
-  instances: ["Semigroup", "Monoid", "Functor", "Apply", "Applicative"]
+  instances: [
+    "Semigroup",
+    "Monoid",
+    "Functor",
+    "Apply",
+    "Applicative",
+    "Foldable",
+    "Traversable",
+    "Chain",
+    "Monad"
+  ]
 });
 
 const Just = value => ({
@@ -40,11 +50,21 @@ const Just = value => ({
   ap: other => (other.isJust() ? Just(fantasyMap(other.value(), value)) : other),
   reduce: (fn, initial) => fn(initial, value),
   traverse: (typeRepresentative, fn) => fantasyMap(Just, fn(value)),
-  chain: fn => fantasyMap(fn, value),
+  chain: fn => fn(value),
   constructor: Maybe,
   toString: () => `Just(${value})`,
   inspect: () => `Just(${value})`,
-  instances: ["Semigroup", "Monoid", "Functor", "Apply", "Applicative"]
+  instances: [
+    "Semigroup",
+    "Monoid",
+    "Functor",
+    "Apply",
+    "Applicative",
+    "Foldable",
+    "Traversable",
+    "Chain",
+    "Monad"
+  ]
 });
 
 const Maybe = {
